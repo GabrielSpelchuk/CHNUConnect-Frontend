@@ -1,11 +1,13 @@
 import { useState } from "react";
 import Login from "./components/Login/Login";
+import Registration from "./components/Registration/Registration";
 import AllPosts from "./components/Posts/AllPosts";
 import PostById from "./components/Posts/PostById";
 
 export default function App() {
   const [loggedIn, setLoggedIn] = useState(!!localStorage.getItem("token"));
   const [view, setView] = useState("list");
+  const [authView, setAuthView] = useState("login"); // 'login' or 'register'
 
   const handleLogin = () => setLoggedIn(true);
   const handleLogout = () => {
@@ -14,7 +16,11 @@ export default function App() {
   };
 
   if (!loggedIn) {
-    return <Login onLogin={handleLogin} />;
+    return authView === "login" ? (
+      <Login onLogin={handleLogin} onShowRegister={() => setAuthView("register")} />
+    ) : (
+      <Registration onRegister={handleLogin} onShowLogin={() => setAuthView("login")} />
+    );
   }
 
   return (

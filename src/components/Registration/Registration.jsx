@@ -1,30 +1,31 @@
 import { useState } from "react";
-import "./Login.css";
-import { MailIcon, LockIcon, EyeIcon, GoogleIcon, EyeOffIcon } from "../Icons";
-import { loginUser } from "../../api/loginApi";
+import "../Login/Login.css";
+import { MailIcon, LockIcon, EyeIcon, EyeOffIcon, GoogleIcon } from "../Icons";
+import { registerUser } from "../../api/registrationApi";
 
-const handleForgotPassword = () => alert("Link 'Forgot Password' clicked!");
-const handleGoogleSignIn = () => alert("Button 'Sign in with Google' clicked!");
+const handleGoogleSignUp = () => alert("Button 'Sign up with Google' clicked!");
 
-
-export default function Login({ onLogin, onShowRegister }) {
+export default function Registration({ onRegister, onShowLogin }) {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
     setError(null);
 
+    if (!name.trim()) return setError("Please enter your name.");
+    if (password !== confirmPassword) return setError("Passwords do not match.");
+
+    setLoading(true);
     try {
-      const data = await loginUser({ email, password });
+      const data = await registerUser({ name, email, password });
       if (data.token) localStorage.setItem("token", data.token);
-      if (onLogin) onLogin();
-      else console.log("Login successful, token stored:", data.token);
+      if (onRegister) onRegister();
     } catch (err) {
       setError(err.message);
     } finally {
@@ -36,16 +37,31 @@ export default function Login({ onLogin, onShowRegister }) {
     <div className="login-container">
       <div className="login-card">
         <div className="header">
-          <h2 className="h2">Увійти</h2>
-          <p className="subtitle">
-            Увійдіть, використовуючи своє ім'я користувача та пароль.
-          </p>
+          <h2 className="h2">Реєстрація</h2>
+          <p className="subtitle">Створи акаунт, щоб почати користуватися додатком.</p>
         </div>
 
         {error && <p className="error-message">{error}</p>}
 
+        <button onClick={handleGoogleSignUp} className="google-button" style={{ marginBottom: 16 }}>
+          <img src={GoogleIcon} alt="google" className="google-icon" />
+          <span>Sign up with Google</span>
+        </button>
+
         <form onSubmit={handleSubmit}>
-          {/* Електронна пошта */}
+          <label htmlFor="name" className="label">Ім'я</label>
+          <div className="input-group">
+            <input
+              id="name"
+              type="text"
+              placeholder="Ваше ім'я"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              className="input-field"
+            />
+          </div>
+
           <label htmlFor="email" className="label">Емейл</label>
           <div className="input-group">
             <img src={MailIcon} alt="mail" className="icon" />
@@ -60,7 +76,6 @@ export default function Login({ onLogin, onShowRegister }) {
             />
           </div>
 
-          {/* Пароль */}
           <label htmlFor="password" className="label">Пароль</label>
           <div className="input-group">
             <img src={LockIcon} alt="lock" className="icon" />
@@ -89,45 +104,31 @@ export default function Login({ onLogin, onShowRegister }) {
             </button>
           </div>
 
-          <a href="#" onClick={handleForgotPassword} className="forgot-password-link">
-            Забули пароль?
-          </a>
+          <label htmlFor="confirmPassword" className="label">Підтвердження паролю</label>
+          <div className="input-group">
+            <img src={LockIcon} alt="lock" className="icon" />
+            <input
+              id="confirmPassword"
+              type={showPassword ? "text" : "password"}
+              placeholder="Confirm password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+              className="input-field"
+            />
+          </div>
 
-          {/* Кнопка Увійти */}
           <button
             type="submit"
             disabled={loading}
             className={`primary-button ${loading ? 'loading' : ''}`}
           >
-            {loading ? "Завантаження..." : "Увійти"}
+            {loading ? "Реєстрація..." : "Зареєструватися"}
           </button>
         </form>
-        
-        {/* Запам'ятати мене */}
-        <div className="remember-me-container">
-            <div 
-                className={`toggle ${rememberMe ? 'checked' : ''}`} 
-                onClick={() => setRememberMe(!rememberMe)}
-            >
-                <div className="toggle-circle"></div>
-            </div>
-            <span className="remember-me-label">Запам'ятати мене</span>
-        </div>
 
-        <hr className="divider" />
-
-        {/* Вхід через Google */}
-        <button onClick={handleGoogleSignIn} className="google-button">
-          <img src={GoogleIcon} alt="google" className="google-icon" />
-          <span>Sign in with Google</span>
-        </button>
-
-        {/* Не маєте акаунту? */}
         <p className="signup-text">
-            Не маєте акаунту? 
-            <a href="#" onClick={(e) => { e.preventDefault(); if (typeof onShowRegister === 'function') onShowRegister(); }} className="signup-link">
-              Зареєструйтесь
-            </a>
+          Вже маєш акаунт? <a href="#" onClick={(e) => { e.preventDefault(); if (typeof onShowLogin === 'function') onShowLogin(); }} className="signup-link">Увійти</a>
         </p>
       </div>
     </div>
