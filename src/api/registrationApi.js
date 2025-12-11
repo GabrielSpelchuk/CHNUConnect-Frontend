@@ -1,10 +1,10 @@
 const BASE_URL = "/api/auth";
 
-export const registerUser = async ({ name, email, password }) => {
+export const registerUser = async ({ username, email, password }) => {
   const res = await fetch(`${BASE_URL}/register`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ name, email, password }),
+    body: JSON.stringify({ username, email, password }),
   });
 
   if (!res.ok) {

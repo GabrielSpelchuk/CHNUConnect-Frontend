@@ -6,7 +6,7 @@ import { registerUser } from "../../api/registrationApi";
 const handleGoogleSignUp = () => alert("Button 'Sign up with Google' clicked!");
 
 export default function Registration({ onRegister, onShowLogin }) {
-  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -18,14 +18,15 @@ export default function Registration({ onRegister, onShowLogin }) {
     e.preventDefault();
     setError(null);
 
-    if (!name.trim()) return setError("Please enter your name.");
+    if (!username.trim()) return setError("Please enter your username.");
     if (password !== confirmPassword) return setError("Passwords do not match.");
 
     setLoading(true);
     try {
-      const data = await registerUser({ name, email, password });
-      if (data.token) localStorage.setItem("token", data.token);
-      if (onRegister) onRegister();
+      const data = await registerUser({ username, email, password });
+      if (typeof onShowLogin === 'function') {
+        onShowLogin();
+      }
     } catch (err) {
       setError(err.message);
     } finally {
@@ -52,11 +53,11 @@ export default function Registration({ onRegister, onShowLogin }) {
           <label htmlFor="name" className="label">Ім'я</label>
           <div className="input-group">
             <input
-              id="name"
+              id="username"
               type="text"
               placeholder="Ваше ім'я"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               required
               className="input-field"
             />
