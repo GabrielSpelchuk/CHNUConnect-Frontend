@@ -1,4 +1,4 @@
-const BASE_URL = "https://localhost:7083/api/post";
+const BASE_URL = "/api/post";
 
 export const getAllPosts = async (token) => {
   const res = await fetch(BASE_URL, {

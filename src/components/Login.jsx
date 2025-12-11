@@ -12,17 +12,17 @@ export default function Login({ onLogin }) {
     setError(null);
 
     try {
-      const res = await fetch("https://localhost:7083/api/auth/login", {
+      const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }) // <-- заміна username на email
+        body: JSON.stringify({ email, password })
       });
 
       if (!res.ok) throw new Error("Invalid email or password");
 
       const data = await res.json();
       localStorage.setItem("token", data.token);  // зберігаємо JWT
-      onLogin();  // повідомляємо App, що користувач увійшов
+      onLogin();
     } catch (err) {
       setError(err.message);
     } finally {
