@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { getPostById } from "../api/postApi";
+import { getPostById } from "../../api/postApi";
 
 export default function PostById() {
   const [postId, setPostId] = useState("");

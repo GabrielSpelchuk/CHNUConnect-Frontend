@@ -1,7 +1,7 @@
 import { useState } from "react";
-import Login from "./components/Login";
-import AllPosts from "./components/AllPosts";
-import PostById from "./components/PostById";
+import Login from "./components/Login/Login";
+import AllPosts from "./components/Posts/AllPosts";
+import PostById from "./components/Posts/PostById";
 
 export default function App() {
   const [loggedIn, setLoggedIn] = useState(!!localStorage.getItem("token"));
