@@ -1,44 +1,129 @@
 import { useState } from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./components/Login/Login";
 import Registration from "./components/Registration/Registration";
-import AllPosts from "./components/Posts/AllPosts";
-import PostById from "./components/Posts/PostById";
+import Home from "./pages/Home/Home";
+import EventsList from "./pages/Events/EventsList";
+import CreateEvent from "./pages/Events/CreateEvent";
+import EditEvent from "./pages/Events/EditEvent";
+import GroupsList from "./pages/Groups/GroupsList";
+import CreateGroup from "./pages/Groups/CreateGroup";
+import EditGroup from "./pages/Groups/EditGroup";
+import GroupCard from "./pages/Groups/GroupCard";
+import About from "./pages/About/About";
+
+function PrivateRoute({ children }) {
+  const isLoggedIn = !!localStorage.getItem("token");
+  return isLoggedIn ? children : <Navigate to="/login" />;
+}
+
+function PublicRoute({ children }) {
+  const isLoggedIn = !!localStorage.getItem("token");
+  return !isLoggedIn ? children : <Navigate to="/" />;
+}
 
 export default function App() {
-  const [loggedIn, setLoggedIn] = useState(!!localStorage.getItem("token"));
-  const [view, setView] = useState("list");
-  const [authView, setAuthView] = useState("login"); // 'login' or 'register'
-
-  const handleLogin = () => setLoggedIn(true);
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    setLoggedIn(false);
-  };
-
-  if (!loggedIn) {
-    return authView === "login" ? (
-      <Login onLogin={handleLogin} onShowRegister={() => setAuthView("register")} />
-    ) : (
-      <Registration onRegister={handleLogin} onShowLogin={() => setAuthView("login")} />
-    );
-  }
+  const [authView, setAuthView] = useState("login");
 
   return (
-    <div style={{ padding: "20px", fontFamily: "Inter, sans-serif" }}>
-      <h1>Posts App</h1>
-      <button onClick={handleLogout} style={{ marginBottom: "20px" }}>Logout</button>
-      <div style={{ marginBottom: "20px" }}>
-        <button onClick={() => setView("list")} style={{ marginRight: "10px" }}>
-          Show All Posts
-        </button>
-        <button onClick={() => setView("single")}>
-          Get Post By ID
-        </button>
-      </div>
-      <div>
-        {view === "list" && <AllPosts />}
-        {view === "single" && <PostById />}
-      </div>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route
+          path="/login"
+          element={
+            <PublicRoute>
+              <Login
+                onLogin={() => window.location.href = "/"}
+                onShowRegister={() => setAuthView("register")}
+              />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/register"
+          element={
+            <PublicRoute>
+              <Registration
+                onRegister={() => window.location.href = "/"}
+                onShowLogin={() => setAuthView("login")}
+              />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/"
+          element={
+            <PrivateRoute>
+              <Home />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/events"
+          element={
+            <PrivateRoute>
+              <EventsList />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/events/create"
+          element={
+            <PrivateRoute>
+              <CreateEvent />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/events/edit/:id"
+          element={
+            <PrivateRoute>
+              <EditEvent />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/groups"
+          element={
+            <PrivateRoute>
+              <GroupsList />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/groups/create"
+          element={
+            <PrivateRoute>
+              <CreateGroup />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/groups/edit/:id"
+          element={
+            <PrivateRoute>
+              <EditGroup />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/groups/:id"
+          element={
+            <PrivateRoute>
+              <GroupCard />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/about"
+          element={
+            <PrivateRoute>
+              <About />
+            </PrivateRoute>
+          }
+        />
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
