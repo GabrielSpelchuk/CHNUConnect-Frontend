@@ -1,45 +1,83 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import Login from "./components/Login/Login";
-import Registration from "./components/Registration/Registration";
-import AllPosts from "./components/Posts/AllPosts";
-import PostById from "./components/Posts/PostById";
+import Login from "./components/Auth/Login";
+import Registration from "./components/Auth/Registration";
+import HomePage from "./components/HomePage";
+import AdminPanel from "./components/AdminPanel/AdminPanel";
 
 export default function App() {
   const [loggedIn, setLoggedIn] = useState(!!localStorage.getItem("token"));
-  const [view, setView] = useState("list");
-  const [authView, setAuthView] = useState("login"); // 'login' or 'register'
+  const [role, setRole] = useState(localStorage.getItem("role"));
 
-  const handleLogin = () => setLoggedIn(true);
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    setLoggedIn(false);
+  function isJwtValid(token) {
+  if (!token) return false;
+
+  try {
+    const parts = token.split(".");
+    if (parts.length !== 3) return false;
+
+    const payload = JSON.parse(atob(parts[1]));
+
+    if (payload.exp) {
+      const now = Date.now() / 1000;
+      if (payload.exp < now) return false;
+    }
+
+    return true;
+  } catch (err) {
+    return false;
+  }
+}
+
+  const handleLogin = (userRole) => {
+    setLoggedIn(true);
+    setRole(userRole);
+    localStorage.setItem("role", userRole);
   };
 
-  if (!loggedIn) {
-    return authView === "login" ? (
-      <Login onLogin={handleLogin} onShowRegister={() => setAuthView("register")} />
-    ) : (
-      <Registration onRegister={handleLogin} onShowLogin={() => setAuthView("login")} />
-    );
-  }
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    setLoggedIn(false);
+    setRole(null);
+  };
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (!isJwtValid(token)) {
+      handleLogout();
+    }
+  }, []);
 
   return (
-    <div style={{ padding: "20px", fontFamily: "Inter, sans-serif" }}>
-      <h1>Posts App</h1>
-      <button onClick={handleLogout} style={{ marginBottom: "20px" }}>Logout</button>
-      <div style={{ marginBottom: "20px" }}>
-        <button onClick={() => setView("list")} style={{ marginRight: "10px" }}>
-          Show All Posts
-        </button>
-        <button onClick={() => setView("single")}>
-          Get Post By ID
-        </button>
-      </div>
-      <div>
-        {view === "list" && <AllPosts />}
-        {view === "single" && <PostById />}
-      </div>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        {!loggedIn ? (
+          <>
+            <Route path="/login" element={<Login onLogin={handleLogin} />} />
+            <Route path="/register" element={<Registration onRegister={handleLogin} />} />
+            <Route path="*" element={<Navigate to="/login" replace />} />
+          </>
+        ) : (
+          <>
+            {/* HomePage з nested routes */}
+            <Route path="/" element={<HomePage onLogout={handleLogout} />}>
+              <Route index element={<HomePage.NewsFeed />} />
+              <Route path="groups" element={<HomePage.GroupsList />} />
+              <Route path="events" element={<HomePage.EventsList />} />
+              <Route path="profile" element={<HomePage.Profile />} />
+            </Route>
+
+            {/* Admin доступ тільки якщо роль admin */}
+            {role === "admin" && (
+              <Route path="/admin" element={<AdminPanel onLogout={handleLogout} />} />
+            )}
+
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </>
+        )}
+      </Routes>
+    </BrowserRouter>
   );
 }

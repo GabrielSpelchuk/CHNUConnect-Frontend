@@ -1,11 +1,13 @@
 import { useState } from "react";
-import "../Login/Login.css";
+import { useNavigate } from "react-router-dom";
+import "./Login.css";
 import { MailIcon, LockIcon, EyeIcon, EyeOffIcon, GoogleIcon } from "../Icons";
 import { registerUser } from "../../api/registrationApi";
 
 const handleGoogleSignUp = () => alert("Button 'Sign up with Google' clicked!");
 
 export default function Registration({ onRegister, onShowLogin }) {
+  const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -129,7 +131,14 @@ export default function Registration({ onRegister, onShowLogin }) {
         </form>
 
         <p className="signup-text">
-          Вже маєш акаунт? <a href="#" onClick={(e) => { e.preventDefault(); if (typeof onShowLogin === 'function') onShowLogin(); }} className="signup-link">Увійти</a>
+          Вже маєш акаунт?
+          <span
+            onClick={() => navigate("/login")}
+            className="signup-link"
+            style={{ cursor: "pointer" }}
+          >
+            Увійти
+          </span>
         </p>
       </div>
     </div>
