@@ -31,6 +31,7 @@ body {
   position: sticky;
   top: 0;
   z-index: 50;
+  margin: 0;
 }
 
 .header-left {
@@ -44,11 +45,31 @@ body {
   color: #2563eb; /* синій акцент */
 }
 
+.logo-icon {
+  width: 32px;
+  height: 32px;
+  margin-right: 8px;
+  margin-left: 50px;
+}
+
 .header-nav {
   display: flex;
   gap: 22px;
   align-items: center;
 }
+
+.header-nav {
+  margin-right: 28px;
+}
+.user-icon,
+.search-icon {
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 10px;
+}
+
 
 .nav-link {
   color: #444;
@@ -63,9 +84,17 @@ body {
 }
 
 .header-right {
+  margin-left: auto;
   display: flex;
-  gap: 22px;
+  gap: 16px;
   align-items: center;
+}
+
+.user-icon,
+.search-icon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
 }
 
 .search-icon {
@@ -94,7 +123,15 @@ body {
   text-align: center;
   justify-content: center;
   height: 300px;
-  background: linear-gradient(135deg, #4A63E7, #6F80EC);
+
+  background-image:
+      linear-gradient(135deg, rgba(74, 99, 231, 0.85), rgba(111, 128, 236, 0.85)),
+      url('/CHNU.png');
+  
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
   color: #ffffff;
   margin-bottom: 0;
 }
@@ -106,12 +143,14 @@ body {
 }
 
 /* --- 3. Основний Контент (Layout) --- */
-.main-content-area {
+.main-content-area.with-sidebar {
   display: grid;
-  grid-template-columns: 1fr 300px;
-  gap: 0;
-  margin: 0;
-  padding: 0;
+  grid-template-columns: 1fr 300px; /* контент + Sidebar */
+  gap: 24px;
+}
+
+.main-content-area.full-width {
+  display: block; /* або 1 колонка */
 }
 
 /* --- Card Base --- */
@@ -134,7 +173,7 @@ body {
 .section-title {
   font-size: 22px;
   font-weight: 700;
-  margin: 0 4px;
+  margin: 0 4px 10px;
 }
 
 /* --- Post Creator/Composer --- */
@@ -251,6 +290,15 @@ body {
 .action-button.like {
   color: #e30000;
   font-weight: bold;
+}
+
+.action-icon {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  display: inline;
+  vertical-align: middle;
+  margin-right: 6px;
 }
 
 /* --- 5. Бічна Панель (Sidebar) --- */

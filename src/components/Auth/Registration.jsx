@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "../Login/Login.css";
+import "./Login.css";
 import { MailIcon, LockIcon, EyeIcon, EyeOffIcon, GoogleIcon } from "../Icons";
 import { registerUser } from "../../api/registrationApi";
 

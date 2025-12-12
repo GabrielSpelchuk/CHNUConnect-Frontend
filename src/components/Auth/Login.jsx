@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./Login.css";
 import { MailIcon, LockIcon, EyeIcon, GoogleIcon, EyeOffIcon } from "../Icons";
 import { loginUser } from "../../api/loginApi";
@@ -6,8 +7,9 @@ import { loginUser } from "../../api/loginApi";
 const handleForgotPassword = () => alert("Link 'Forgot Password' clicked!");
 const handleGoogleSignIn = () => alert("Button 'Sign in with Google' clicked!");
 
+export default function Login({ onShowRegister }) {
+  const navigate = useNavigate();
 
-export default function Login({ onLogin, onShowRegister }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -22,9 +24,13 @@ export default function Login({ onLogin, onShowRegister }) {
 
     try {
       const data = await loginUser({ email, password });
-      if (data.token) localStorage.setItem("token", data.token);
-      if (onLogin) onLogin();
-      else console.log("Login successful, token stored:", data.token);
+
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+      }
+
+      navigate("/");
+      
     } catch (err) {
       setError(err.message);
     } finally {
@@ -45,7 +51,6 @@ export default function Login({ onLogin, onShowRegister }) {
         {error && <p className="error-message">{error}</p>}
 
         <form onSubmit={handleSubmit}>
-          {/* Електронна пошта */}
           <label htmlFor="email" className="label">Емейл</label>
           <div className="input-group">
             <img src={MailIcon} alt="mail" className="icon" />
@@ -60,7 +65,6 @@ export default function Login({ onLogin, onShowRegister }) {
             />
           </div>
 
-          {/* Пароль */}
           <label htmlFor="password" className="label">Пароль</label>
           <div className="input-group">
             <img src={LockIcon} alt="lock" className="icon" />
@@ -78,7 +82,6 @@ export default function Login({ onLogin, onShowRegister }) {
               className="eye-button"
               onClick={() => setShowPassword(!showPassword)}
               aria-pressed={showPassword}
-              aria-label={showPassword ? "Hide password" : "Show password"}
             >
               <img
                 src={showPassword ? EyeOffIcon : EyeIcon}
@@ -93,7 +96,6 @@ export default function Login({ onLogin, onShowRegister }) {
             Забули пароль?
           </a>
 
-          {/* Кнопка Увійти */}
           <button
             type="submit"
             disabled={loading}
@@ -102,32 +104,36 @@ export default function Login({ onLogin, onShowRegister }) {
             {loading ? "Завантаження..." : "Увійти"}
           </button>
         </form>
-        
-        {/* Запам'ятати мене */}
+
         <div className="remember-me-container">
-            <div 
-                className={`toggle ${rememberMe ? 'checked' : ''}`} 
-                onClick={() => setRememberMe(!rememberMe)}
-            >
-                <div className="toggle-circle"></div>
-            </div>
-            <span className="remember-me-label">Запам'ятати мене</span>
+          <div 
+            className={`toggle ${rememberMe ? 'checked' : ''}`} 
+            onClick={() => setRememberMe(!rememberMe)}
+          >
+            <div className="toggle-circle"></div>
+          </div>
+          <span className="remember-me-label">Запам'ятати мене</span>
         </div>
 
         <hr className="divider" />
 
-        {/* Вхід через Google */}
         <button onClick={handleGoogleSignIn} className="google-button">
           <img src={GoogleIcon} alt="google" className="google-icon" />
           <span>Sign in with Google</span>
         </button>
 
-        {/* Не маєте акаунту? */}
         <p className="signup-text">
-            Не маєте акаунту? 
-            <a href="#" onClick={(e) => { e.preventDefault(); if (typeof onShowRegister === 'function') onShowRegister(); }} className="signup-link">
-              Зареєструйтесь
-            </a>
+          Не маєте акаунту? 
+          <a
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              if (typeof onShowRegister === "function") onShowRegister();
+            }}
+            className="signup-link"
+          >
+            Зареєструйтесь
+          </a>
         </p>
       </div>
     </div>
