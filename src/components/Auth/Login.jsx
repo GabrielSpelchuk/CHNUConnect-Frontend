@@ -7,7 +7,7 @@ import { loginUser } from "../../api/loginApi";
 const handleForgotPassword = () => alert("Link 'Forgot Password' clicked!");
 const handleGoogleSignIn = () => alert("Button 'Sign in with Google' clicked!");
 
-export default function Login({ onShowRegister }) {
+export default function Login({ onLogin, onShowRegister }) {
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
@@ -18,25 +18,28 @@ export default function Login({ onShowRegister }) {
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
+  e.preventDefault();
+  setLoading(true);
+  setError(null);
 
-    try {
-      const data = await loginUser({ email, password });
+  try {
+    const data = await loginUser({ email, password });
 
-      if (data.token) {
-        localStorage.setItem("token", data.token);
-      }
-
-      navigate("/");
-      
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+    if (data.token) {
+      localStorage.setItem("token", data.token);
     }
-  };
+
+    if (onLogin) onLogin(data.role); // зберігаємо роль у App
+
+    // Редірект робимо тільки на HomePage
+    navigate("/"); 
+
+  } catch (err) {
+    setError(err.message);
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="login-container">
@@ -124,16 +127,13 @@ export default function Login({ onShowRegister }) {
 
         <p className="signup-text">
           Не маєте акаунту? 
-          <a
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              if (typeof onShowRegister === "function") onShowRegister();
-            }}
+          <span
+            onClick={() => navigate("/register")}
             className="signup-link"
+            style={{ cursor: "pointer" }}
           >
             Зареєструйтесь
-          </a>
+          </span>
         </p>
       </div>
     </div>

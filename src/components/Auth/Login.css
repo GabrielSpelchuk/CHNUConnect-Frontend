@@ -28,6 +28,8 @@
 /* ----------------------------------- */
 
 .header {
+    display: flex;
+    flex-direction: column;
     text-align: left;
     margin-bottom: 20px;
     width: 100%;
