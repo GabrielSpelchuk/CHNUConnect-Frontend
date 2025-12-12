@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import './Profile.css';
 import { getUserProfile } from '../../api/getUserProfile';
+import { getPostUserById } from '../../api/getPostUserById';
 
 const Profile = () => {
   const [user, setUser] = useState(null);
+  const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -15,6 +17,9 @@ const Profile = () => {
 
         const userData = await getUserProfile(token);
         setUser(userData);
+
+        const userPosts = await getPostUserById(userData.id, token);
+        setPosts(userPosts || []);
       } catch (err) {
         console.error("Error fetching user:", err);
         setError(err.message);
@@ -71,8 +76,8 @@ const Profile = () => {
 
       <div className="recent-posts-section">
         <h3 className="section-title">Останні пости</h3>
-        {user.posts && user.posts.length > 0 ? (
-          user.posts.map(post => (
+        {posts.length > 0 ? (
+          posts.map(post => (
             <div key={post.id} className="post-placeholder">
               {post.content}
             </div>

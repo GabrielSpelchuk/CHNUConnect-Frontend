@@ -7,8 +7,8 @@ import HeroBanner from './Common/HeroBanner.jsx';
 import NewsFeed from './NewsFeed/NewsFeed.jsx';
 import Sidebar from './SideBar/SideBarHomePage.jsx';
 import Footer from './Common/Footer.jsx';
-import Profile from './Profile/Profile.jsx';
 import './HomePage.css';
+import Profile from './Profile/Profile.jsx';
 
 function HomePage() {
   const location = useLocation();
@@ -18,20 +18,17 @@ function HomePage() {
     <div className="app-container">
       <Header />
 
-      {/* HeroBanner тільки на головній */}
+      {/* HeroBanner показується тільки на головній */}
       {isHome && <HeroBanner />}
 
       <div className={`main-content-area ${isHome ? "with-sidebar" : "full-width"}`}>
-        {isHome && <NewsFeed />}
+        <Routes>
+          <Route path="/" element={<NewsFeed />} />
+          <Route path="/groups" element={<GroupsList />} />
+          <Route path="/events" element={<EventsList />} />
+          <Route path="/profile" element={<Profile />} />
+        </Routes>
         {isHome && <Sidebar />}
-        
-        {!isHome && (
-          <Routes>
-            <Route path="/groups" element={<GroupsList />} />
-            <Route path="/events" element={<EventsList />} />
-            <Route path="/profile" element={<Profile />} />
-          </Routes>
-        )}
       </div>
 
       <Footer />
